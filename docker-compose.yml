@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: ubuntustore-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ubuntu_admin
+      POSTGRES_PASSWORD: UbStore_Pr0j3ct#2026
+      POSTGRES_DB: ubuntustoredb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+
+volumes:
+  pgdata:

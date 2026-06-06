@@ -1,0 +1,27 @@
+{
+  "name": "ubuntustore",
+  "version": "2.0.0",
+  "description": "Sistema de gestión integral para UbuntuStore - Tienda de tecnología",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "db:start": "docker-compose up -d",
+    "db:stop": "docker-compose down",
+    "db:reset": "docker-compose down -v && docker-compose up -d"
+  },
+  "keywords": [
+    "store",
+    "management",
+    "express",
+    "pos"
+  ],
+  "author": "UbuntuStore",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "pg": "^8.13.0"
+  }
+}

@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UbuntuStore - Acceso</title>
+    <link rel="stylesheet" href="css/styles.css" />
+    <style>
+      /* High-End Visual Design & Motion Customization for Login Page */
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100vh;
+        background-color: var(--bg-primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* Ambient Mesh Orbs */
+      .ambient-orbs {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+      }
+
+      .orb-1 {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(231, 111, 81, 0.06), transparent 70%);
+        top: -200px;
+        right: -100px;
+        animation: floatOrb 12s ease-in-out infinite alternate;
+      }
+
+      .orb-2 {
+        position: absolute;
+        width: 500px;
+        height: 500px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(77, 144, 142, 0.04), transparent 70%);
+        bottom: -150px;
+        left: -100px;
+        animation: floatOrb 15s ease-in-out infinite alternate-reverse;
+      }
+
+      @keyframes floatOrb {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(40px, 30px) scale(1.1); }
+      }
+
+      /* Double-Bezel Card Architecture */
+      .outer-shell {
+        position: relative;
+        z-index: 10;
+        width: 440px;
+        background: rgba(20, 17, 19, 0.4);
+        border: 1px solid var(--border-color);
+        padding: 8px;
+        border-radius: 24px;
+        box-shadow: var(--shadow-lg);
+        animation: revealCard 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      .inner-core {
+        background: var(--bg-card);
+        border: 1px solid rgba(255, 255, 255, 0.02);
+        box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+        border-radius: 18px;
+        padding: 40px 32px;
+      }
+
+      @keyframes revealCard {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Logo branding with hardware precise line */
+      .brand-header {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .brand-logo-container {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 56px;
+        border-radius: 12px;
+        background: rgba(231, 111, 81, 0.08);
+        border: 1px solid rgba(231, 111, 81, 0.2);
+        margin-bottom: 16px;
+        color: var(--primary);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      }
+
+      .brand-logo-container svg {
+        width: 28px;
+        height: 28px;
+      }
+
+      .brand-header h1 {
+        font-size: 24px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+        color: var(--text-primary);
+        margin-bottom: 4px;
+      }
+
+      .brand-header p {
+        font-size: 13px;
+        color: var(--text-muted);
+        letter-spacing: 0.2px;
+      }
+
+      /* Premium Tab Switching */
+      .tab-wrapper {
+        position: relative;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border-color);
+        padding: 4px;
+        border-radius: 30px;
+        display: flex;
+        margin-bottom: 32px;
+      }
+
+      .tab-btn {
+        flex: 1;
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 0;
+        cursor: pointer;
+        z-index: 2;
+        transition: color var(--transition-normal);
+        border-radius: 20px;
+        text-align: center;
+      }
+
+      .tab-btn.active {
+        color: var(--text-primary);
+      }
+
+      /* Underlay slider */
+      .tab-slider {
+        position: absolute;
+        top: 4px;
+        bottom: 4px;
+        left: 4px;
+        width: calc(50% - 4px);
+        background: var(--bg-card-hover);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        z-index: 1;
+        transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .tab-wrapper.register-active .tab-slider {
+        transform: translateX(100%);
+      }
+
+      /* Floating input labels and interactive effects */
+      .form-group-floating {
+        position: relative;
+        margin-bottom: 24px;
+      }
+
+      .form-group-floating input {
+        width: 100%;
+        height: 52px;
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 14px;
+        padding: 16px 16px 4px;
+        outline: none;
+        transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+      }
+
+      .form-group-floating label {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 14px;
+        color: var(--text-muted);
+        pointer-events: none;
+        transition: transform var(--transition-normal) ease, font-size var(--transition-normal) ease, color var(--transition-normal) ease;
+        transform-origin: left top;
+      }
+
+      /* Label focus states */
+      .form-group-floating input:focus ~ label,
+      .form-group-floating input:not(:placeholder-shown) ~ label {
+        transform: translateY(-80%) scale(0.8);
+        color: var(--primary);
+      }
+
+      .form-group-floating input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.15);
+      }
+
+      /* Staggered load animation */
+      .stagger-1 { animation-delay: 0.1s; }
+      .stagger-2 { animation-delay: 0.18s; }
+      .stagger-3 { animation-delay: 0.25s; }
+      .stagger-4 { animation-delay: 0.32s; }
+      .stagger-5 { animation-delay: 0.38s; }
+
+      /* Form switcher container */
+      .form-slide-container {
+        position: relative;
+        overflow: hidden;
+        transition: height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+      }
+
+      .form-pane {
+        width: 100%;
+        transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.25s ease;
+      }
+
+      .form-pane.inactive {
+        position: absolute;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #loginPane {
+        transform: translateX(0);
+      }
+
+      #registerPane {
+        transform: translateX(100%);
+      }
+
+      .register-active #loginPane {
+        transform: translateX(-100%);
+        opacity: 0;
+      }
+
+      .register-active #registerPane {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      /* Inline backlink */
+      .store-backlink {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 24px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color var(--transition-fast);
+      }
+
+      .store-backlink:hover {
+        color: var(--primary);
+      }
+
+      .store-backlink svg {
+        width: 14px;
+        height: 14px;
+        transition: transform var(--transition-fast);
+      }
+
+      .store-backlink:hover svg {
+        transform: translateX(-3px);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ambient-orbs">
+      <div class="orb-1"></div>
+      <div class="orb-2"></div>
+    </div>
+
+    <div class="outer-shell">
+      <div class="inner-core">
+        <div class="brand-header">
+          <div class="brand-logo-container">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2" opacity="0.3" stroke-dasharray="1 1" />
+              <path d="M8 8v5a4 4 0 0 0 8 0v-5" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <circle cx="12" cy="13" r="1" fill="currentColor" />
+            </svg>
+          </div>
+          <h1>UbuntuStore</h1>
+          <p>Portal de Acceso y Gestión</p>
+        </div>
+
+        <div class="tab-wrapper" id="authTabs">
+          <div class="tab-slider"></div>
+          <button id="tabLogin" class="tab-btn active">Iniciar Sesión</button>
+          <button id="tabRegister" class="tab-btn">Registrarse</button>
+        </div>
+
+        <div id="loginError" class="login-error" style="margin-bottom: 20px;"></div>
+
+        <div class="form-slide-container" id="formSlideContainer">
+          <!-- LOGIN FORM -->
+          <div class="form-pane" id="loginPane">
+            <form id="loginForm">
+              <div class="form-group-floating">
+                <input type="text" id="username" placeholder=" " autocomplete="off" required />
+                <label for="username">Usuario</label>
+              </div>
+
+              <div class="form-group-floating">
+                <input type="password" id="password" placeholder=" " required />
+                <label for="password">Contraseña</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="loginBtn" style="margin-top: 8px;">
+                <span class="spinner"></span>
+                <span class="btn-text">Iniciar Sesión</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- REGISTER FORM -->
+          <div class="form-pane inactive" id="registerPane">
+            <form id="registerForm">
+              <div class="form-group-floating">
+                <input type="text" id="regFullName" placeholder=" " autocomplete="off" required />
+                <label for="regFullName">Nombre Completo</label>
+              </div>
+
+              <div class="form-group-floating">
+                <input type="text" id="regUsername" placeholder=" " autocomplete="off" required />
+                <label for="regUsername">Nombre de Usuario</label>
+              </div>
+
+              <div class="form-group-floating">
+                <input type="password" id="regPassword" placeholder=" " required />
+                <label for="regPassword">Contraseña</label>
+              </div>
+
+              <div class="form-group-floating">
+                <input type="password" id="regPasswordConfirm" placeholder=" " required />
+                <label for="regPasswordConfirm">Confirmar Contraseña</label>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block btn-lg" id="registerBtn" style="margin-top: 8px;">
+                <span class="spinner"></span>
+                <span class="btn-text">Crear Cuenta</span>
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <a href="index.html" class="store-backlink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          Volver a la Tienda
+        </a>
+      </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+  </body>
+</html>
