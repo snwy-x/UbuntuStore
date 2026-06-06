@@ -2,12 +2,20 @@ const pg = require('pg');
 const { Pool } = pg;
 
 process.env.PGSSLMODE = 'no-verify';
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 pg.defaults.ssl = { rejectUnauthorized: false };
 
 let poolConfig;
 
-const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+let connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 if (connectionString) {
+  try {
+    const parsedUrl = new URL(connectionString);
+    parsedUrl.searchParams.delete('sslmode');
+    connectionString = parsedUrl.toString();
+  } catch (err) {
+    console.error('Error al parsear connectionString:', err);
+  }
   poolConfig = {
     connectionString: connectionString,
     ssl: {
