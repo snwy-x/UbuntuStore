@@ -2,10 +2,10 @@ const { Pool } = require('pg');
 
 let poolConfig;
 
-// Si existe la variable DATABASE_URL (recomendado para producción en Vercel)
-if (process.env.DATABASE_URL) {
+const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+if (connectionString) {
   poolConfig = {
-    connectionString: process.env.DATABASE_URL,
+    connectionString: connectionString,
     ssl: {
       rejectUnauthorized: false
     }
