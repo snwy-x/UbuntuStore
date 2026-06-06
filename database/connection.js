@@ -1,4 +1,8 @@
-const { Pool } = require('pg');
+const pg = require('pg');
+const { Pool } = pg;
+
+process.env.PGSSLMODE = 'no-verify';
+pg.defaults.ssl = { rejectUnauthorized: false };
 
 let poolConfig;
 
