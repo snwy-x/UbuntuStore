@@ -11,6 +11,12 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'src')));
 
+// Helper para manejar errores de API de forma segura (evita la fuga de credenciales o URLs)
+const handleApiError = (res, err, defaultMessage = 'Error interno del servidor') => {
+    console.error('[API ERROR]:', err);
+    res.json({ success: false, message: defaultMessage });
+};
+
 // Rutas de la API de UbuntuStore
 
 // Autenticación de usuarios
@@ -49,8 +55,7 @@ app.post('/api/auth/login', async (req, res) => {
             user: { id: user.id, nombre: user.nombre_completo, usuario: user.usuario, rol: user.rol }
         });
     } catch (err) {
-        console.error('Login error:', err);
-        res.json({ success: false, message: 'Error de conexión con la base de datos: ' + err.message });
+        handleApiError(res, err, 'Error de conexión con la base de datos');
     }
 });
 
@@ -98,8 +103,7 @@ app.post('/api/auth/register', async (req, res) => {
 
         res.json({ success: true, message: 'Usuario registrado con éxito' });
     } catch (err) {
-        console.error('Registration error:', err);
-        res.json({ success: false, message: 'Error al registrar usuario: ' + err.message });
+        handleApiError(res, err, 'Error al registrar usuario');
     }
 });
 
@@ -131,7 +135,7 @@ app.get('/api/inventory', async (req, res) => {
         const result = await query(q, params);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -145,7 +149,7 @@ app.post('/api/inventory', async (req, res) => {
              p.precio_venta, p.stock_actual || 0, p.stock_minimo || 5, p.proveedor_id || null, p.garantia_meses || 0]);
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -162,7 +166,7 @@ app.put('/api/inventory', async (req, res) => {
              p.garantia_meses || 0, p.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -171,7 +175,7 @@ app.delete('/api/inventory/:id', async (req, res) => {
         await query('UPDATE Productos SET activo = false WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -184,7 +188,7 @@ app.get('/api/inventory/low-stock', async (req, res) => {
                ORDER BY p.stock_actual ASC`);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -194,7 +198,7 @@ app.get('/api/categories', async (req, res) => {
         const result = await query('SELECT * FROM Categorias ORDER BY nombre');
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -205,7 +209,7 @@ app.post('/api/categories', async (req, res) => {
             [req.body.nombre, req.body.descripcion || '']);
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -252,7 +256,7 @@ app.post('/api/sales', async (req, res) => {
         res.json({ success: true, folio: folio, ventaId: ventaId });
     } catch (err) {
         await client.query('ROLLBACK');
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la venta');
     } finally {
         client.release();
     }
@@ -280,7 +284,7 @@ app.get('/api/sales', async (req, res) => {
         const result = await query(q, params);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -293,7 +297,7 @@ app.get('/api/sales/:id/detail', async (req, res) => {
                WHERE dv.venta_id = $1`, [req.params.id]);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -303,7 +307,7 @@ app.get('/api/clients', async (req, res) => {
         const result = await query('SELECT * FROM Clientes ORDER BY nombre');
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -316,7 +320,7 @@ app.post('/api/clients', async (req, res) => {
             [c.nombre, c.telefono || '', c.email || '', c.direccion || '', c.notas || '']);
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -329,7 +333,7 @@ app.put('/api/clients', async (req, res) => {
             [c.nombre, c.telefono || '', c.email || '', c.direccion || '', c.notas || '', c.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -338,7 +342,7 @@ app.delete('/api/clients/:id', async (req, res) => {
         await query('DELETE FROM Clientes WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -355,7 +359,7 @@ app.get('/api/clients/:id/history', async (req, res) => {
                WHERE os.cliente_id = $1 ORDER BY os.fecha_recepcion DESC`, [clienteId]);
         res.json({ success: true, ventas: ventas.rows, servicios: servicios.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -382,7 +386,7 @@ app.get('/api/workshop', async (req, res) => {
         const result = await query(q, params);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -400,7 +404,7 @@ app.post('/api/workshop', async (req, res) => {
              order.tecnico_id || null, order.notas || '']);
         res.json({ success: true, id: result.rows[0].id, folio: folio });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -425,7 +429,7 @@ app.put('/api/workshop', async (req, res) => {
         }
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -435,7 +439,7 @@ app.get('/api/suppliers', async (req, res) => {
         const result = await query('SELECT * FROM Proveedores WHERE activo = true ORDER BY nombre');
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -448,7 +452,7 @@ app.post('/api/suppliers', async (req, res) => {
             [s.nombre, s.contacto || '', s.telefono || '', s.email || '', s.direccion || '']);
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -461,7 +465,7 @@ app.put('/api/suppliers', async (req, res) => {
             [s.nombre, s.contacto || '', s.telefono || '', s.email || '', s.direccion || '', s.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -470,7 +474,7 @@ app.delete('/api/suppliers/:id', async (req, res) => {
         await query('UPDATE Proveedores SET activo = false WHERE id = $1', [req.params.id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -519,7 +523,7 @@ app.post('/api/purchases', async (req, res) => {
         res.json({ success: true, folio: folio, compraId: compraId });
     } catch (err) {
         await client.query('ROLLBACK');
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la compra');
     } finally {
         client.release();
     }
@@ -535,7 +539,7 @@ app.get('/api/purchases', async (req, res) => {
                ORDER BY cp.fecha DESC`);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -550,7 +554,7 @@ app.get('/api/payables', async (req, res) => {
                ORDER BY cpp.fecha_vencimiento`);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -563,7 +567,7 @@ app.post('/api/payables/pay', async (req, res) => {
                WHERE id = $2`, [monto, id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -588,7 +592,7 @@ app.get('/api/cash/movements', async (req, res) => {
 
         res.json({ success: true, data: result.rows, summary: summary.rows[0] });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -618,7 +622,7 @@ app.post('/api/quoter', async (req, res) => {
         res.json({ success: true, id: cotizacionId });
     } catch (err) {
         await client.query('ROLLBACK');
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la cotización');
     } finally {
         client.release();
     }
@@ -634,7 +638,7 @@ app.get('/api/quoter', async (req, res) => {
                ORDER BY ce.fecha DESC`);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -647,7 +651,7 @@ app.get('/api/quoter/:id/detail', async (req, res) => {
                WHERE dc.cotizacion_id = $1`, [req.params.id]);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -659,7 +663,7 @@ app.get('/api/users', async (req, res) => {
                FROM Usuarios u INNER JOIN Roles r ON u.rol_id = r.id ORDER BY u.nombre_completo`);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -673,7 +677,7 @@ app.post('/api/users', async (req, res) => {
             [user.nombre_completo, user.usuario, hash, user.rol_id]);
         res.json({ success: true, id: result.rows[0].id });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -695,7 +699,7 @@ app.put('/api/users', async (req, res) => {
         await query(q, params);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -705,7 +709,7 @@ app.put('/api/users/toggle-active', async (req, res) => {
         await query('UPDATE Usuarios SET activo = $1 WHERE id = $2', [activo, id]);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -714,7 +718,7 @@ app.get('/api/roles', async (req, res) => {
         const result = await query('SELECT * FROM Roles ORDER BY id');
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -744,7 +748,7 @@ app.get('/api/audit', async (req, res) => {
         const result = await query(q, params);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -757,7 +761,7 @@ app.post('/api/audit', async (req, res) => {
             [usuario_id, accion, tabla_afectada, registro_id || null, detalle || '']);
         res.json({ success: true });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -788,7 +792,7 @@ app.get('/api/dashboard/stats', async (req, res) => {
 
         res.json({ success: true, data: stats });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -816,7 +820,7 @@ app.get('/api/public/products', async (req, res) => {
         const result = await query(q, params);
         res.json({ success: true, data: result.rows });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -835,7 +839,7 @@ app.get('/api/public/workshop/track/:folio', async (req, res) => {
         }
         res.json({ success: true, data: result.rows[0] });
     } catch (err) {
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la solicitud');
     }
 });
 
@@ -913,8 +917,7 @@ app.post('/api/sales/online', async (req, res) => {
         res.json({ success: true, folio, ventaId });
     } catch (err) {
         await client.query('ROLLBACK');
-        console.error('Online checkout error:', err);
-        res.json({ success: false, message: err.message });
+        handleApiError(res, err, 'Error al procesar la compra online');
     } finally {
         client.release();
     }
