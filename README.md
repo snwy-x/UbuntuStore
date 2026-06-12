@@ -457,34 +457,6 @@ erDiagram
 https://www.figma.com/design/k5UOFbidYLjkxtWOiKYkQf/ProyectoUbuntuStore?node-id=0-1&p=f
 
 ---
-
-### 8. Guía de Configuración y Ejecución (Para el Profesor)
-
-Dado que la base de datos ha sido migrada a la nube (**Supabase**) y el backend está listo para funcionar en entornos Serverless (**Vercel**), **ya no es obligatorio utilizar Docker ni instalar PostgreSQL localmente** para evaluar o ejecutar este proyecto. Sin embargo, se mantiene el soporte para Docker como una opción secundaria.
-
-A continuación, se detallan los pasos necesarios para levantar el proyecto de forma local utilizando la base de datos en la nube y para realizar el despliegue en Vercel.
-
----
-
-#### Opción A: Ejecución Local Rápida (Recomendada con Supabase Cloud)
-
-Esta opción conecta la aplicación local a la base de datos PostgreSQL alojada en la nube de Supabase. Requiere cero instalación de bases de datos locales.
-
-##### Requisitos Previos:
-- Tener instalado [Node.js](https://nodejs.org/) (Versión 18 o superior).
-- Un gestor de paquetes (`npm` o `pnpm`).
-
-##### Pasos para la ejecución:
-
-1. **Descargar y abrir el proyecto**:
-   Extraiga los archivos del proyecto y abra una terminal en el directorio raíz del proyecto.
-
-2. **Instalar dependencias**:
-   Ejecute el siguiente comando para instalar todos los módulos necesarios (incluyendo `dotenv` para cargar variables de entorno):
-   ```bash
-   pnpm install
-   # O si utiliza npm:
-   npm install
    ```
 
 3. **Configurar Variables de Entorno (`.env`)**:
